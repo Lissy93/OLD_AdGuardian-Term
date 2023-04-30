@@ -2,8 +2,10 @@ package pains
 
 import (
 	"fmt"
+
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
+	"github.com/lissy93/adguardian-term/common"
 	"github.com/lissy93/adguardian-term/fetch"
 )
 
@@ -12,8 +14,8 @@ func BlockPercentage(stats fetch.AdGuardStats) *widgets.PieChart {
 	chartBlockPercent := widgets.NewPieChart()
 	chartBlockPercent.Title = "Block Percentage"
 	chartBlockPercent.Data = []float64{
-		float64(stats.NumBlockedFiltering),
 		float64(stats.NumDNSQueries - stats.NumBlockedFiltering - stats.NumReplacedParental - stats.NumReplacedSafeBrowsing),
+		float64(stats.NumBlockedFiltering),
 		float64(stats.NumReplacedSafeBrowsing),
 		float64(stats.NumReplacedParental),
 	}
@@ -23,9 +25,9 @@ func BlockPercentage(stats fetch.AdGuardStats) *widgets.PieChart {
 		var label string
 		switch i {
 		case 0:
-			label = "Blocked"
-		case 1:
 			label = "Allowed"
+		case 1:
+			label = "Blocked"
 		case 2:
 			label = "Malware"
 		default:
@@ -34,7 +36,14 @@ func BlockPercentage(stats fetch.AdGuardStats) *widgets.PieChart {
 		return fmt.Sprintf("%s %.02f%%", label, percentage)
 	}
 	chartBlockPercent.AngleOffset = 90
-	chartBlockPercent.BorderStyle.Fg = ui.ColorBlue
+	chartBlockPercent.Colors = []ui.Color{
+		ui.ColorGreen,
+		ui.ColorYellow,
+		ui.ColorRed,
+		ui.ColorMagenta,
+		ui.ColorBlue,
+	}
+	common.SetCommonStyles(chartBlockPercent)
 	return chartBlockPercent
 }
 
@@ -47,11 +56,9 @@ func QueryCount(stats fetch.AdGuardStats) *widgets.Table {
 		{"Malware", fmt.Sprintf("[%d](fg:red,mod:bold)", stats.NumReplacedSafeBrowsing)},
 		{"Total", fmt.Sprintf("[%d](fg:cyan,mod:bold)", stats.NumDNSQueries)},
 	}
-	queryCountPain.TextStyle = ui.NewStyle(ui.ColorWhite)
 	queryCountPain.Title = "Query Count"
-	queryCountPain.TextAlignment = ui.AlignCenter
-	queryCountPain.BorderStyle.Fg = ui.ColorBlue
-	queryCountPain.FillRow = true
+
+	common.SetCommonStyles(queryCountPain)
 
 	return queryCountPain
 }
