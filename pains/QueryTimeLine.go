@@ -23,10 +23,8 @@ func queriesPerMinute(logs fetch.AdGuardQueryLog) (map[int64]int, map[int64]int)
 		minutesAgo := int64(now.Sub(logTime).Minutes())
 		if log.Reason != "NotFilteredNotFound" {
 			blockedCounts[minutesAgo]++
-			allowedCounts[minutesAgo] += 0
 		} else {
 			allowedCounts[minutesAgo]++
-			blockedCounts[minutesAgo] += 0
 		}
 	}
 
