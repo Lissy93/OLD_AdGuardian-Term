@@ -1,15 +1,16 @@
 package pains
 
 import (
+	"fmt"
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
 	"github.com/lissy93/adguardian-term/common"
 	"github.com/lissy93/adguardian-term/fetch"
+	"math"
 	"time"
 )
 
 func queriesPerMinute(logs fetch.AdGuardQueryLog) (map[int64]int, map[int64]int) {
-	counts := make(map[int64]int)
 	blockedCounts := make(map[int64]int)
 	allowedCounts := make(map[int64]int)
 	now := time.Now()
@@ -20,44 +21,58 @@ func queriesPerMinute(logs fetch.AdGuardQueryLog) (map[int64]int, map[int64]int)
 			continue
 		}
 		minutesAgo := int64(now.Sub(logTime).Minutes())
-		if log.Reason == "FilteredBlackList" {
+		if log.Reason != "NotFilteredNotFound" {
 			blockedCounts[minutesAgo]++
 			allowedCounts[minutesAgo] += 0
 		} else {
 			allowedCounts[minutesAgo]++
 			blockedCounts[minutesAgo] += 0
 		}
-		counts[minutesAgo]++
 	}
 
 	return allowedCounts, blockedCounts
 }
 
-func prepareScatterPlotData(logs fetch.AdGuardQueryLog) [][]float64 {
-	data := make([][]float64, 2)
-	data[0] = []float64{}
-	data[1] = []float64{}
-
+func prepareScatterPlotData(logs fetch.AdGuardQueryLog, plotWidth int) [][]float64 {
 	allowedRequestCount, blockedRequestCounts := queriesPerMinute(logs)
 
-	for _, count := range allowedRequestCount {
-		data[0] = append(data[0], float64(count))
-	}
-	for _, count := range blockedRequestCounts {
-		data[1] = append(data[1], float64(count))
-	}
+	stretchedData := make([][]float64, 2)
+	stretchedData[0] = stretchData(allowedRequestCount, plotWidth)
+	stretchedData[1] = stretchData(blockedRequestCounts, plotWidth)
 
-	return data
+	return stretchedData
 }
 
-func QueryTimeLine(queryLog fetch.AdGuardQueryLog) *widgets.Plot {
+func stretchData(data map[int64]int, targetLength int) []float64 {
+	stretched := []float64{}
+
+	originalLength := len(data)
+	if originalLength == 0 {
+		return stretched
+	}
+
+	stretchFactor := float64(targetLength) / float64(originalLength)
+
+	for _, count := range data {
+		repeatCount := int(math.Round(stretchFactor))
+		for i := 0; i < repeatCount; i++ {
+			stretched = append(stretched, float64(count))
+		}
+	}
+
+	return stretched
+}
+
+func QueryTimeLine(queryLog fetch.AdGuardQueryLog, width int) *widgets.Plot {
 	p0 := widgets.NewPlot()
-	p0.Title = "Current Query Volume"
-	p0.Data = prepareScatterPlotData(queryLog)
+	p0.Title = fmt.Sprintf("Current Query Volume %d", width)
+	p0.Data = make([][]float64, 0)
+	p0.Data = prepareScatterPlotData(queryLog, width)
 	p0.LineColors[0] = ui.ColorGreen
 	p0.LineColors[1] = ui.ColorRed
 	common.SetCommonStyles(p0)
 	p0.DataLabels = []string{"Allowed", "Blocked"}
 	p0.DrawDirection = widgets.DrawRight
+	p0.MaxVal = 50
 	return p0
 }
