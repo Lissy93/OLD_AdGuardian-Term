@@ -13,12 +13,21 @@ import (
 )
 
 func main() {
-	const rowCount float64 = 12
 
 	if err := termui.Init(); err != nil {
 		log.Fatalf("failed to initialize termui: %v", err)
 	}
 	defer termui.Close()
+
+	// Create the channels
+	done := make(chan bool)
+	statsChan := make(chan fetch.AdGuardStats)
+	logsChan := make(chan fetch.AdGuardQueryLog)
+
+	// Start the fetchData function as a goroutine
+	go fetch.FetchData(done, statsChan, logsChan)
+
+	const rowCount float64 = 12
 
 	// Define widgets
 	var (
@@ -40,10 +49,12 @@ func main() {
 		termHeight          int
 	)
 
-	// Will initialize the widgets with given data
-	setWidgetData := func(stats fetch.AdGuardStats, queryLog fetch.AdGuardQueryLog) {
+	setStaticWidgets := func() {
 		titleWidget = pains.Title()
 		statusWidget = pains.DnsStatus()
+	}
+
+	setStatsWidgetsData := func(stats fetch.AdGuardStats) {
 		pieChartWidget = pains.BlockPercentage(stats)
 		queryCountWidget = pains.QueryCount(stats)
 		allowSparkWidget = pains.AllowedSparkLine(stats)
@@ -53,6 +64,9 @@ func main() {
 		queryLogWidget = pains.QueryLog(stats)
 		blockLogWidget = pains.BlockLog(stats)
 		clientLogWidget = pains.ClientLog(stats)
+	}
+
+	setQueryLogWidgetsData := func(queryLog fetch.AdGuardQueryLog) {
 		queryTreeWidget = pains.QueryTree(queryLog)
 		const queryPlotProportion float64 = 0.6 * 3 // Because takes 0.6 of screen, and each plot is 3 chars wide
 		queryTimePlot = pains.QueryTimeLine(queryLog, int(math.Round(float64(termWidth)*queryPlotProportion)))
@@ -70,8 +84,13 @@ func main() {
 			log.Fatalf("failed to fetch AdGuard query log: %v", queryLogErr)
 		}
 
-		setWidgetData(stats, queryLog)
+		setStaticWidgets()
+		setStatsWidgetsData(stats)
+		setQueryLogWidgetsData(queryLog)
 	}
+
+	termWidth, termHeight = termui.TerminalDimensions()
+	updateWidgetData()
 
 	grid = termui.NewGrid()
 
@@ -81,8 +100,6 @@ func main() {
 		// Set up the grid layout
 		termWidth, termHeight = termui.TerminalDimensions()
 		grid.SetRect(0, 0, termWidth, termHeight)
-
-		updateWidgetData()
 
 		// Row 1 - Title and AdGuard DNS Status
 		row1 := termui.NewRow(
@@ -128,13 +145,16 @@ func main() {
 
 	renderWidgets()
 
-	// Timer, for re-fetching data + updating UI
-	ticker := time.NewTicker(5 * time.Second)
-	defer ticker.Stop()
-
 	uiEvents := ui.PollEvents()
 	for {
 		select {
+		case stats := <-statsChan:
+			setStatsWidgetsData(stats)
+		case logs := <-logsChan:
+			setQueryLogWidgetsData(logs)
+		case <-time.After(1 * time.Second):
+			go fetch.FetchData(done, statsChan, logsChan)
+			renderWidgets()
 		case e := <-uiEvents:
 			switch e.ID {
 			case "q", "<C-c>":
@@ -142,9 +162,6 @@ func main() {
 			case "<Resize>":
 				payload := e.Payload.(ui.Resize)
 				grid.SetRect(0, 0, payload.Width, payload.Height)
-				ui.Clear()
-				ui.Render(grid)
-				ui.Clear()
 				renderWidgets()
 			case "r":
 				renderWidgets()
@@ -158,8 +175,6 @@ func main() {
 				queryTreeWidget.ScrollUp()
 				termui.Render(queryTreeWidget)
 			}
-		case <-ticker.C:
-			renderWidgets()
 		}
 	}
 }
