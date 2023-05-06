@@ -7,6 +7,7 @@ import (
 	"github.com/lissy93/adguardian-term/fetch"
 	"github.com/lissy93/adguardian-term/pains"
 	"github.com/lissy93/adguardian-term/values"
+	tb "github.com/nsf/termbox-go"
 	"log"
 	"math"
 	"time"
@@ -18,6 +19,8 @@ func main() {
 		log.Fatalf("failed to initialize termui: %v", err)
 	}
 	defer termui.Close()
+
+	tb.SetInputMode(tb.InputEsc)
 
 	// Create the channels
 	done := make(chan bool)
@@ -49,14 +52,13 @@ func main() {
 		termHeight          int
 	)
 
-	setStaticWidgets := func() {
+	setWidgetData := func(stats fetch.AdGuardStats, queryLog fetch.AdGuardQueryLog) {
 		titleWidget = pains.Title()
 		statusWidget = pains.DnsStatus()
-	}
-
-	setStatsWidgetsData := func(stats fetch.AdGuardStats) {
 		pieChartWidget = pains.BlockPercentage(stats)
-		queryCountWidget = pains.QueryCount(stats)
+		if stats.NumDNSQueries > 0 {
+			queryCountWidget = pains.QueryCount(stats)
+		}
 		allowSparkWidget = pains.AllowedSparkLine(stats)
 		blockedSparkWidget = pains.BlockedSparkLine(stats)
 		parentalSparkWidget = pains.ParentalSparkLine(stats)
@@ -64,29 +66,26 @@ func main() {
 		queryLogWidget = pains.QueryLog(stats)
 		blockLogWidget = pains.BlockLog(stats)
 		clientLogWidget = pains.ClientLog(stats)
-	}
-
-	setQueryLogWidgetsData := func(queryLog fetch.AdGuardQueryLog) {
 		queryTreeWidget = pains.QueryTree(queryLog)
-		const queryPlotProportion float64 = 0.6 * 3 // Because takes 0.6 of screen, and each plot is 3 chars wide
-		queryTimePlot = pains.QueryTimeLine(queryLog, int(math.Round(float64(termWidth)*queryPlotProportion)))
+		if len(queryLog.Data) > 0 {
+			const queryPlotProportion float64 = 0.6 * 3 // Because takes 0.6 of screen, and each plot is 3 chars wide
+			queryTimePlot = pains.QueryTimeLine(queryLog, int(math.Round(float64(termWidth)*queryPlotProportion)))
+		}
 	}
 
-	// Fetches data, then calls to initialize widgets
+	termWidth, termHeight = termui.TerminalDimensions()
 	updateWidgetData := func() {
 		stats, statsErr := fetch.GetAdGuardStats(values.ENDPOINT+"/control/stats", values.USERNAME, values.PASSWORD)
 		if statsErr != nil {
-			log.Fatalf("failed to fetch AdGuard stats: %v", statsErr)
+			log.Printf("failed to fetch AdGuard stats: %v", statsErr)
 		}
 
 		queryLog, queryLogErr := fetch.GetAdGuardQueryLog(values.ENDPOINT+"/control/querylog", values.USERNAME, values.PASSWORD)
 		if queryLogErr != nil {
-			log.Fatalf("failed to fetch AdGuard query log: %v", queryLogErr)
+			log.Printf("failed to fetch AdGuard query log: %v", queryLogErr)
 		}
 
-		setStaticWidgets()
-		setStatsWidgetsData(stats)
-		setQueryLogWidgetsData(queryLog)
+		setWidgetData(stats, queryLog)
 	}
 
 	termWidth, termHeight = termui.TerminalDimensions()
@@ -96,7 +95,6 @@ func main() {
 
 	// Sets up the grid, with widgets
 	renderWidgets := func() {
-
 		// Set up the grid layout
 		termWidth, termHeight = termui.TerminalDimensions()
 		grid.SetRect(0, 0, termWidth, termHeight)
@@ -146,14 +144,17 @@ func main() {
 	renderWidgets()
 
 	uiEvents := ui.PollEvents()
+	var stats fetch.AdGuardStats
+	var queryLog fetch.AdGuardQueryLog
+
+	ticker := time.NewTicker(1 * time.Second)
 	for {
 		select {
 		case stats := <-statsChan:
-			setStatsWidgetsData(stats)
+			setWidgetData(stats, queryLog)
 		case logs := <-logsChan:
-			setQueryLogWidgetsData(logs)
-		case <-time.After(1 * time.Second):
-			go fetch.FetchData(done, statsChan, logsChan)
+			setWidgetData(stats, logs)
+		case <-ticker.C:
 			renderWidgets()
 		case e := <-uiEvents:
 			switch e.ID {
