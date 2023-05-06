@@ -26,7 +26,7 @@ func FetchData(done chan bool, statsChan chan AdGuardStats, logsChan chan AdGuar
 		select {
 		case <-done:
 			return
-		case <-time.After(10 * time.Second):
+		case <-time.After(1 * time.Second):
 			// Continue fetching data
 		}
 	}
