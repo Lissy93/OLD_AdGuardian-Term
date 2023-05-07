@@ -48,5 +48,9 @@ func SetCommonStyles(w ui.Drawable) {
 		widget.TitleStyle.Modifier = bold
 		widget.BorderStyle.Fg = borderColor
 		widget.AxesColor = defaultForeground
+	case *widgets.StackedBarChart:
+		widget.TitleStyle.Fg = defaultForeground
+		widget.TitleStyle.Modifier = bold
+		widget.BorderStyle.Fg = borderColor
 	}
 }
