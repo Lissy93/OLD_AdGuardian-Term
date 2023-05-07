@@ -30,13 +30,14 @@ func main() {
 	// Start the fetchData function as a goroutine
 	go fetch.FetchData(done, statsChan, logsChan)
 
-	const rowCount float64 = 12
+	const rowCount float64 = 13
 
 	// Define widgets
 	var (
 		grid                *termui.Grid
 		titleWidget         *widgets.Paragraph
 		statusWidget        *widgets.Paragraph
+		filterHistoryBars   *widgets.StackedBarChart
 		pieChartWidget      *widgets.PieChart
 		queryCountWidget    *widgets.Table
 		allowSparkWidget    *widgets.SparklineGroup
@@ -59,6 +60,7 @@ func main() {
 		if stats.NumDNSQueries > 0 {
 			queryCountWidget = pains.QueryCount(stats)
 		}
+		filterHistoryBars = pains.FilterTypeHistoryBar(stats)
 		allowSparkWidget = pains.AllowedSparkLine(stats)
 		blockedSparkWidget = pains.BlockedSparkLine(stats)
 		parentalSparkWidget = pains.ParentalSparkLine(stats)
@@ -100,8 +102,7 @@ func main() {
 		grid.SetRect(0, 0, termWidth, termHeight)
 
 		// Row 1 - Title and AdGuard DNS Status
-		row1 := termui.NewRow(
-			1.0/rowCount,
+		row1 := termui.NewRow(1.0/rowCount,
 			termui.NewCol(0.2, titleWidget),
 			termui.NewCol(0.8, statusWidget),
 		)
@@ -130,12 +131,19 @@ func main() {
 		)
 
 		// Row 4 - Query tree
-		row4 := termui.NewRow(4.0/rowCount,
+		row4 := termui.NewRow(5.0/rowCount,
 			termui.NewCol(0.25, queryTreeWidget),
-			termui.NewCol(0.75, queryTimePlot),
+			termui.NewCol(0.75,
+				termui.NewRow(0.5,
+					termui.NewCol(1, queryTimePlot),
+				),
+				termui.NewRow(0.5,
+					termui.NewCol(1, filterHistoryBars),
+				),
+			),
 		)
 
-		grid.Set(row1, nil, row2, row3, row4)
+		grid.Set(row1, row2, row3, row4)
 
 		// Render the grid
 		termui.Render(grid)
