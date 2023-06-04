@@ -1,20 +1,21 @@
 <h1 align="center">[OLD] AdGuardian-Term</h1>
 <p align="center">
-	<i>Terminal-based, real-time traffic monitoring and statistics for your AdGuard Home instance</i><br><br>
-  This project has been re-written from scratch - see <b><a href="https://github.com/Lissy93/AdGuardian-Term">Lissy93/AdGuardian-Term</a></b> instead!
-</p>
-
-<p align="center">
-  <img width="600" src="https://i.ibb.co/BykbdjF/Screenshot-from-2023-06-03-22-57-07.png" >
+	<i>Terminal-based, real-time traffic monitoring and statistics for your AdGuard Home instance</i><br>
 </p>
 
 ## About
 
+<img align="right" width="450" src="https://i.ibb.co/BykbdjF/Screenshot-from-2023-06-03-22-57-07.png" >
+
+> **Note**:  This project has been re-written from scratch<br>See **[Lissy93/AdGuardian-Term](https://github.com/Lissy93/AdGuardian-Term)** instead!
+
 My purpose for uploading this (failed) project is to show that not everything goes according to plan, and that's okay - it's just part of the learning process!
 I've written more about my learnings in the [Background & Lessons Learned](#background--lessons-learned) section below.
 
-Although abandoned, this app is still fully functional, and pretty much feature complete.<br>
+Although abandoned, this app is still fully functional, and pretty much feature complete.
 If you wish to continue, see the [usage](#usage) instructions for development and deployment docs.
+
+<br><br>
 
 ---
 
@@ -33,6 +34,11 @@ Instead, I picked up Rust - a language I'd been curious about but hadn't found t
 Rebuilding my app in Rust wasn't a walk in the park, though. It has a steep learning curve and some unique concepts, like ownership and borrowing, which took a while to wrap my head around. Nevertheless, the more I delved into it, the more I found myself appreciating its design. In particular, its ability to prevent common programming errors, like null pointer dereferencing and data races, was a huge win for me.
 
 As developers, we need to remind ourselves that it's okay to take a step back, reassess our decisions, and change our course if necessary. After all, in the long run, it's not about how quickly we can finish a project but about how well we can adapt, learn, and grow along the way. That's how we build not just better software, but also become better developers.
+
+The new project is uploaded here:
+
+[![Lissy93/AdGuardian-Term - GitHub](https://gh-card.dev/repos/Lissy93/AdGuardian-Term.svg?fullname=)](https://github.com/Lissy93/AdGuardian-Term)
+
 
 ---
 
