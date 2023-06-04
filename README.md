@@ -11,7 +11,7 @@
 ## About
 
 My purpose for uploading this (failed) project is to show that not everything goes according to plan, and that's okay - it's just part of the learning process!
-I've written more about my learnings in the [Background & Lessons Learned](#background-lessons-learned) section below.
+I've written more about my learnings in the [Background & Lessons Learned](#background--lessons-learned) section below.
 
 Although abandoned, this app is still fully functional, and pretty much feature complete.<br>
 If you wish to continue, see the [usage](#usage) instructions for development and deployment docs.
