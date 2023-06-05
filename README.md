@@ -15,7 +15,7 @@ I've written more about my learnings in the [Background & Lessons Learned](#back
 Although now re-written, this app is still fully functional, and pretty much feature complete.
 If you wish to continue, see the [usage](#usage) instructions for development and deployment docs.
 
-<br><br>
+<br>
 
 ---
 
