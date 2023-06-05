@@ -5,14 +5,14 @@
 
 ## About
 
-<img align="right" width="450" src="https://i.ibb.co/BykbdjF/Screenshot-from-2023-06-03-22-57-07.png" >
+<img align="right" width="460" src="https://i.ibb.co/BykbdjF/Screenshot-from-2023-06-03-22-57-07.png" >
 
-> **Note**:  This project has been re-written from scratch<br>See **[Lissy93/AdGuardian-Term](https://github.com/Lissy93/AdGuardian-Term)** instead!
+> **Note**: This app has now been replaced<br>See **[Lissy93/AdGuardian-Term](https://github.com/Lissy93/AdGuardian-Term)** instead!
 
 My purpose for uploading this (failed) project is to show that not everything goes according to plan, and that's okay - it's just part of the learning process!
 I've written more about my learnings in the [Background & Lessons Learned](#background--lessons-learned) section below.
 
-Although abandoned, this app is still fully functional, and pretty much feature complete.
+Although now re-written, this app is still fully functional, and pretty much feature complete.
 If you wish to continue, see the [usage](#usage) instructions for development and deployment docs.
 
 <br><br>
@@ -21,19 +21,17 @@ If you wish to continue, see the [usage](#usage) instructions for development an
 
 ## Background & Lessons Learned
 
-I wanted to build a terminal app that could act as a real-time traffic monitor and display stats from a user's AdGuard Home instance.
-
 Initially, I chose Go, because it's quite performant, has a neat concurrency model, is reasonably quick to write, and (most importantly) compiles into a tidy single binary. I'd also come across the gizak/termui package, which seemed to be the perfect choice for plotting the charts.
 
 However, I found Go's memory safety to be less than ideal. The compiler was irritating and managing threads manually was difficult. I also came across an issue which, for the life of me, I could not resolve - when termui updated the screen, random characters from the previous view would remain, making the charts hard for the user to read.
 
-After spending nearly an entire weekend building out this project, I arrived at the tough realization that I had probably chosen the wrong tech stack. I was initially reluctant to scrap everything I had accomplished so far, but it turned out to be the best course of action.
+After spending nearly an entire weekend building out this project, I arrived at the tough realization that I had probably chosen the wrong tech stack. I was initially reluctant to scrap everything I had written so far, but it was the best way forward.
 
-Instead, I picked up Rust - a language I'd been curious about but hadn't found the right opportunity to dive into. Rust, much like Go, is fast and efficient, but with one key difference - it emphasizes safety and manages memory exceptionally well. Rust also compiles into a single binary and boasts a robust concurrency model. In short, it seemed to address many of the issues I had encountered with Go.
+Instead, I picked up Rust - a language I'd been curious about but hadn't found the right opportunity to dive into. Rust, much like Go, is fast and efficient, but with one key difference - it emphasizes safety and manages memory exceptionally well. Rust also compiles into a single binary and has a robust concurrency model. In short, it seemed to address many of the issues I had encountered with Go.
 
 Rebuilding my app in Rust wasn't a walk in the park, though. It has a steep learning curve and some unique concepts, like ownership and borrowing, which took a while to wrap my head around. Nevertheless, the more I delved into it, the more I found myself appreciating its design. In particular, its ability to prevent common programming errors, like null pointer dereferencing and data races, was a huge win for me.
 
-As developers, we need to remind ourselves that it's okay to take a step back, reassess our decisions, and change our course if necessary. After all, in the long run, it's not about how quickly we can finish a project but about how well we can adapt, learn, and grow along the way. That's how we build not just better software, but also become better developers.
+**As developers, we need to remind ourselves that it's okay to take a step back, reassess our decisions, and change our course if necessary. After all, in the long run, it's not about how quickly we can finish a project but about how well we can adapt, learn, and grow along the way. That's how we build not just better software, but also become better developers.**
 
 The new project is uploaded here:
 
