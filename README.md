@@ -1,13 +1,17 @@
-<h1 align="center">[OLD] AdGuardian-Term</h1>
+<h1 align="center">AdGuardian-Term (Go Version)</h1>
 <p align="center">
-	<i>Terminal-based, real-time traffic monitoring and statistics for your AdGuard Home instance</i><br>
+	<i>Real-time terminal monitoring & stats for AdGuard Home</i><br>
+	<b>🌐 <a href="https://adguardian.as93.net/">adguardian.as93.net</a></b><br>
+	<img width="128" src="https://i.ibb.co/9phhMWP/adguardian-go.png" /><br>
 </p>
 
 ## About
 
 <img align="right" width="460" src="https://i.ibb.co/BykbdjF/Screenshot-from-2023-06-03-22-57-07.png" >
 
-> **Note**: This app has now been replaced<br>See **[Lissy93/AdGuardian-Term](https://github.com/Lissy93/AdGuardian-Term)** instead!
+> [!NOTE]
+> This app has now been re-written in Rust <a href="https://github.com/Lissy93/AdGuardian-Term"><img align="right" width="110" src="https://adguardian.as93.net/images/ferris.png" /></a><br>
+> See **[Lissy93/AdGuardian-Term](https://github.com/Lissy93/AdGuardian-Term)** instead!
 
 My purpose for uploading this (failed) project is to show that not everything goes according to plan, and that's okay - it's just part of the learning process!
 I've written more about my learnings in the [Background & Lessons Learned](#background--lessons-learned) section below.
@@ -101,7 +105,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 <!-- License + Copyright -->
 <p  align="center">
-  <i>© <a href="https://aliciasykes.com">Alicia Sykes</a> 2023</i><br>
+  <i>© <a href="https://aliciasykes.com">Alicia Sykes</a> 2022</i><br>
   <i>Licensed under <a href="https://gist.github.com/Lissy93/143d2ee01ccc5c052a17">MIT</a></i><br>
   <a href="https://github.com/lissy93"><img src="https://i.ibb.co/4KtpYxb/octocat-clean-mini.png" /></a><br>
   <sup>Thanks for visiting :)</sup>
